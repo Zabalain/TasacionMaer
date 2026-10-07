@@ -1,10 +1,8 @@
-// Servidor de tasación: Claude busca anuncios reales en los portales (web_search),
-// y la valoración se calcula aquí con reglas fijas a partir de esos anuncios.
 export const maxDuration = 60;
 
 const PORTALES = ['idealista.com', 'fotocasa.es', 'habitaclia.com'];
 const MODELO = process.env.ANTHROPIC_MODEL || 'claude-sonnet-5-5';
-const DESCUENTO_NEGOCIACION = 0.07; // precio pedido -> precio de cierre (ajústalo a tu experiencia)
+const DESCUENTO_NEGOCIACION = 0.07;
 const MIN_COMPARABLES = 3;
 
 const mediana = (a) => percentil(a, 0.5);
@@ -56,7 +54,6 @@ export async function POST(req) {
       `Prioriza la misma calle, barrio o zona próxima. Portales: ${PORTALES.join(', ')}.\n` +
       'Devuelve SOLO un array JSON con objetos: {"portal":"Idealista|Fotocasa|Habitaclia","url":"enlace exacto del anuncio","titulo":"...","precio":número en euros,"m2":número,"habitaciones":número o null,"fecha":"AAAA-MM-DD si aparece, si no null"}.';
 
-    // Llamada con búsqueda web (puede pausarse; se reanuda hasta 3 veces)
     let messages = [{ role: 'user', content: pedido }];
     const urlsVistas = new Set();
     let texto = '';
@@ -73,7 +70,6 @@ export async function POST(req) {
     let crudos = [];
     try { const t = texto.match(/\[[\s\S]*\]/); crudos = JSON.parse(t ? t[0] : '[]'); } catch { crudos = []; }
 
-    // Trazabilidad: solo se aceptan anuncios cuya URL salió realmente de la búsqueda y es de un portal permitido
     const vistos = new Set();
     let comparables = [];
     for (const c of crudos) {
@@ -89,7 +85,6 @@ export async function POST(req) {
     if (encontrados < MIN_COMPARABLES)
       return Response.json({ error: `Solo se han podido verificar ${encontrados} anuncios comparables (mínimo ${MIN_COMPARABLES}). Prueba con una zona más amplia o una superficie distinta.` });
 
-    // Descarta valores atípicos (€/m² fuera de 0,6x–1,6x la mediana)
     const med0 = mediana(comparables.map((c) => c.precio / c.m2));
     const filtrados = comparables.filter((c) => { const p = c.precio / c.m2; return p >= med0 * 0.6 && p <= med0 * 1.6; });
     if (filtrados.length >= MIN_COMPARABLES) comparables = filtrados;
