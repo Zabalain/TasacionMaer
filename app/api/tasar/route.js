@@ -54,7 +54,7 @@ export async function POST(req) {
       (d.habitaciones ? `- Habitaciones: ${Number(d.habitaciones)}\n` : '') +
       (d.notas ? `- Notas: ${String(d.notas).slice(0, 300)}\n` : '') +
       `Prioriza la misma calle, barrio o zona próxima. Portales: ${PORTALES.join(', ')}.\n` +
-      'Devuelve SOLO un array JSON con objetos: {"portal":"Idealista|Fotocasa|Habitaclia|pisos.com","url":"enlace exacto del anuncio","titulo":"...","precio":número en euros,"m2":número,"habitaciones":número o null,"fecha":"AAAA-MM-DD si aparece, si no null"}.';
+      'Devuelve SOLO un array JSON con objetos: {"portal":"Idealista|Fotocasa|Habitaclia","url":"enlace exacto del anuncio","titulo":"...","precio":número en euros,"m2":número,"habitaciones":número o null,"fecha":"AAAA-MM-DD si aparece, si no null"}.';
 
     // Llamada con búsqueda web (puede pausarse; se reanuda hasta 3 veces)
     let messages = [{ role: 'user', content: pedido }];
