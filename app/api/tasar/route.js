@@ -2,7 +2,7 @@
 // y la valoración se calcula aquí con reglas fijas a partir de esos anuncios.
 export const maxDuration = 60;
 
-const const PORTALES = ['idealista.com', 'fotocasa.es', 'habitaclia.com'];
+const PORTALES = ['idealista.com', 'fotocasa.es', 'habitaclia.com'];
 const MODELO = process.env.ANTHROPIC_MODEL || 'claude-sonnet-5-5';
 const DESCUENTO_NEGOCIACION = 0.07; // precio pedido -> precio de cierre (ajústalo a tu experiencia)
 const MIN_COMPARABLES = 3;
